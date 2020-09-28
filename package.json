@@ -1,0 +1,12 @@
+{
+  "name": "toggle-report",
+  "version": "1.0.0",
+  "main": "bin/index.js",
+  "bin": {
+    "bcsReport": "./bin/index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.20.0"
+  }
+}
