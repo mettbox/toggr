@@ -21,5 +21,5 @@ npm install -g .
 ## Usage
 
 ```sh
-$ toggl-report
+$ togglReport
 ```
