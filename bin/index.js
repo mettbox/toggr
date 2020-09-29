@@ -86,7 +86,8 @@ const render = (data, date) => {
       const client = key !== 'null' ? `${key} › ` : ''
       console.log(`\n${client}${_key} (${_value.time})`)
       if (_value.description.length) {
-        console.log('- ' + _value.description.join('\n- '))
+        let desc = [...new Set(_value.description)]
+        console.log('- ' + desc.join('\n- '))
       }
     }
   }
