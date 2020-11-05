@@ -4,7 +4,7 @@ const axios = require('axios').default
 
 /**
  * Convert Milliseconds to hh:mm
- * 
+ *
  * @param {Number} duration in milliseconds
  */
 const ms2Time = (duration) => {
@@ -19,8 +19,8 @@ const ms2Time = (duration) => {
 
 /**
  * Group object by given prop
- * 
- * @param {String} key 
+ *
+ * @param {String} key
  */
 const groupBy = (key) => (array) =>
   array.reduce((objectsByKeyValue, obj) => {
@@ -31,19 +31,19 @@ const groupBy = (key) => (array) =>
 
 /**
  * Group Toggl Summary
- * 
+ *
  * @param {Object} details - API response data
  */
   const groupDetails = (details) => {
   const byClient = groupBy('client')(details.data)
-  
+
   const grouped = {
     total: ms2Time(details.total_grand)
   }
 
   for (const [ key, value ] of Object.entries(byClient)) {
     let projects = groupBy('project')(value)
-    
+
     for (const [ _key, _value ] of Object.entries(projects)) {
       let desc = []
       let duration = 0
@@ -52,7 +52,7 @@ const groupBy = (key) => (array) =>
           desc.push(value.description)
         }
         duration += value.dur
-      
+
         return {
           description: desc,
           time: ms2Time(duration)
@@ -68,13 +68,13 @@ const groupBy = (key) => (array) =>
 
 /**
  * Render report
- * 
- * @param {Object} data 
- * @param {String} date 
+ *
+ * @param {Object} data
+ * @param {String} date
  */
 const render = (data, date) => {
   const groupedDetails = groupDetails(data)
-  
+
   console.log('\n-------------------------')
   console.log(`Toggl Summary: ${date}`)
   console.log('-------------------------')
@@ -97,11 +97,16 @@ const render = (data, date) => {
 // Setup + render
 // -----------------------------------------------------------------------------
 
-const apiToken = ''
-const apiUserAgent = ''
-const workspaceId = 0
+const [ args ] = process.argv.slice(2)
 
-const date = new Date().toISOString().slice(0,10) // '2020-09-25'
+let date = new Date().toISOString().slice(0,10)
+if(!isNaN(Date.parse(args))) {
+  date = args
+}
+
+const apiToken = '7a48d0fae69910a862829f0048c627ec'
+const apiUserAgent = 'maik@mettbox.de'
+const workspaceId = 4709555
 
 const url = 'https://api.track.toggl.com/reports/api/v2/details'
 const options = {
