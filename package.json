@@ -1,12 +1,72 @@
 {
-  "name": "toggle-report",
-  "version": "1.0.0",
-  "main": "bin/index.js",
+  "name": "togglr",
+  "description": "Toggl time tracking reports CLI",
+  "version": "2.0.0",
+  "author": "Maik Mettenheimer",
   "bin": {
-    "togglReport": "./bin/index.js"
+    "togglr": "./bin/run"
   },
-  "license": "MIT",
+  "bugs": "https://github.com/mettbox/toggle-report/issues",
   "dependencies": {
-    "axios": "^0.20.0"
-  }
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/plugin-help": "^3",
+    "@oclif/plugin-not-found": "^1.2.4",
+    "@types/axios": "^0.14.0",
+    "@types/chalk": "^2.2.0",
+    "@types/inquirer": "^7.3.3",
+    "axios": "^0.21.1",
+    "chalk": "^4.1.1",
+    "console-table-printer": "^2.9.0",
+    "inquirer": "^8.1.2",
+    "tslib": "^1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1",
+    "@oclif/test": "^1",
+    "@types/chai": "^4",
+    "@types/mocha": "^5",
+    "@types/node": "^10",
+    "chai": "^4",
+    "eslint": "^5.13",
+    "eslint-config-oclif": "^3.1",
+    "eslint-config-oclif-typescript": "^0.1",
+    "globby": "^10",
+    "mocha": "^5",
+    "nyc": "^14",
+    "ts-node": "^8",
+    "typescript": "^3.3"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/mettbox/toggle-report",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "togglr",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found"
+    ]
+  },
+  "repository": "https://github.com/mettbox/toggle-report",
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
 }
