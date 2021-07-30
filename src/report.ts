@@ -1,4 +1,9 @@
+import * as chalk from 'chalk'
+import * as clipboardy from 'clipboardy'
 import {Table} from 'console-table-printer'
+import {entriesObject, reportDataObject, reportInputData, reportInputEntry} from './types'
+
+const keypress = require('keypress')
 
 /**
  * Config
@@ -11,61 +16,43 @@ export default class Report {
    *
    * @private
    */
-  readonly #reportData: {
-    count: number;
-    duration: number;
-    entries: { project: string; duration: number; description: string }[];
-  }[]
+  readonly #reportData: reportDataObject
+
+  clipboard: {[key: string]: string}
 
   /**
    * ReportDate
    *
    * @private
    */
-  readonly #reportDate
+  readonly #reportDate: string
 
   /**
    * Constructor
    *
-   * @param {any} data
+   * @param {reportInputData} data
    * @param {string} reportDate
    */
-  constructor(data: {total_count: number; total_grand: number; data: {}[]}, reportDate: string) {
+  constructor(data: reportInputData, reportDate: string) {
     this.#reportDate = reportDate
     this.#reportData = {
-      count: data.total_count,
       duration: this.ms2Time(data.total_grand),
       entries: this.groupedData(data.data),
     }
-  }
-
-  /**
-   * Log raw report data
-   */
-  public log(): void {
-    const {inspect} = require('util')
-
-    // eslint-disable-next-line no-console
-    console.log(inspect(
-      this.#reportData,
-      false,
-      null,
-      true
-    ))
+    this.clipboard = {}
   }
 
   /**
    * Log beautified report data
    */
   public print(): void {
-    const chalk = require('chalk')
-
     const title = chalk.bold('Toggl Report', this.#reportDate, `(${this.#reportData.duration})`, ' '.repeat(44))
 
     console.log(`╔${'═'.repeat(78)}╗`)
     console.log(`║ ${title} ║`)
     console.log(`╚${'═'.repeat(78)}╝`)
 
+    let key: string
     this.#reportData.entries.forEach(entry => {
       console.log('', chalk.bold(entry.client))
       const table = new Table({
@@ -88,33 +75,96 @@ export default class Report {
             name: 'descriptions',
             title: 'Description',
             alignment: 'left',
-            maxLen: 47,
-            minLen: 47,
+            maxLen: 41,
+            minLen: 41,
           },
+          {
+            name: 'hotkey',
+            title: 'Key',
+            alignment: 'center',
+            maxLen: 3,
+            minLen: 3,
+          }
         ],
       })
 
-      entry.projects.forEach(project => table.addRow(project))
+      entry.projects.forEach((project: {project: string, duration: string, descriptions: string}) => {
+        key = Report.nextChar(key)
+        table.addRow({
+          ...project,
+          hotkey: key
+        })
+        this.clipboard = {
+          ...this.clipboard,
+          [key]: project.descriptions
+        }
+      })
       table.printTable()
     })
+
+    this.keypressListener()
+  }
+
+  /**
+   * Keypress listener
+   *
+   * @returns {void} keypress listener
+   * @private
+   */
+  private keypressListener ():void {
+    console.log('Press Key to copy Description or ⌃c to quit.')
+
+    // make `process.stdin` begin emitting "keypress" events
+    const {stdin} = process
+    keypress(stdin)
+
+    // listen for the "keypress" event
+    stdin.on('keypress', (ch: any, key: { name: string, ctrl: boolean }) => {
+      if (key && key.ctrl && key.name === 'c') {
+        stdin.pause()
+      }
+
+      if (key && key.name && this.clipboard[key.name]) {
+        clipboardy.writeSync(this.clipboard[key.name])
+      }
+    })
+
+    if (stdin.setRawMode) {
+      stdin.setRawMode(true)
+    }
+
+    stdin.resume()
+  }
+
+  /**
+   * Increment letters
+   *
+   * @param {string} [char=''] - char
+   * @returns {string} next char
+   * @private
+   */
+  private static nextChar(char: string = '') {
+    return char
+      ? String.fromCharCode(char.charCodeAt(0) + 1)
+      : 'a'
   }
 
   /**
    * Grouped entries by client, projects, descriptions
    *
-   * @param {{}[]} entries
-   * @returns {{ client: string, projects: {}[]}[]} grouped Object
+   * @param {reportInputEntry[]} entries
+   * @returns {entriesObject[]} grouped Object
    * @private
    */
-  private groupedData(entries): { client: string; projects: {}[]}[] {
+  private groupedData(entries: reportInputEntry[]): entriesObject[] {
     const groupByClientsKeys = this.groupBy(entries, 'client')
 
     return Object.keys(groupByClientsKeys).map(client => {
-      const groupByProjectKeys = this.groupBy(groupByClientsKeys[client], 'project')
+      const groupByProjectKeys = <{[key: string]: reportInputEntry[]}>this.groupBy(groupByClientsKeys[client], 'project')
 
       const projects = Object.keys(groupByProjectKeys).map(projectGroup => {
-        const duration = groupByProjectKeys[projectGroup].reduce((durations, project) => {
-          return durations + project.dur
+        const duration = groupByProjectKeys[projectGroup].reduce((durations, {dur}) => {
+          return durations + dur
         }, 0)
 
         const groupByDescriptionKeys = this.groupBy(groupByProjectKeys[projectGroup], 'description')
@@ -139,7 +189,7 @@ export default class Report {
    * @private
    */
   private groupBy(items: {}[], key: string): {[key: string]: {}[]} {
-    return items.reduce((group: {}, entry: {}) => {
+    return items.reduce((group: {[key: string]: any}, entry: {[key: string]: any}) => {
       group[entry[key]] = [...group[entry[key]] || [], entry]
 
       return group
@@ -153,12 +203,17 @@ export default class Report {
    * @returns {string} formatted duration
    */
   ms2Time(duration: number): string {
-    let minutes = parseInt((duration/(1000*60))%60, 10)
-    let hours = parseInt((duration/(1000*60*60))%24, 10)
+    const minutes = (duration/(1000 * 60)) % 60
+    const hours = Math.round((duration/(1000 * 60 * 60)) % 24)
 
-    hours = (hours < 10) ? '0' + hours : hours
-    minutes = (minutes < 10) ? '0' + minutes : minutes
+    const hoursString: string = (hours < 10)
+      ? `0${hours}`
+      : `${hours}`
 
-    return hours + ':' + minutes
+    const minutesString: string = (minutes < 10)
+      ? `0${minutes}`
+      : `${minutes}`
+
+    return `${hoursString}:${minutesString}`
   }
 }

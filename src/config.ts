@@ -1,5 +1,5 @@
-const path = require('path')
 const fs = require('fs')
+const path = require('path')
 
 type configObject = {
   apiToken: string;
@@ -44,7 +44,7 @@ export default class Config {
   /**
    * Toggl Workspaces API URL
    */
-  static apiUrl = 'https://api.track.toggl.com/api/v8/workspaces'
+  static apiUrl = 'https://api.track.toggl.com/api/v8/'
 
   /**
    * Toggl Reports API URL

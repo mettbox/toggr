@@ -3,6 +3,7 @@ import Command from '@oclif/command'
 import Config from './config'
 import axios from 'axios'
 import cli from 'cli-ux'
+import { reportInputData } from './types'
 
 export default abstract class extends Command {
   /**
@@ -43,23 +44,21 @@ export default abstract class extends Command {
   /**
    * Toggl API request
    *
-   * @param {string} url - Toggl API URL
-   * @param {{}} [options={}] - request params
-   *
-   * @returns {Promise<{}>} Axios Response
+   * @param {string} request - API request
+   * @returns {Promise<[]>} Axios Response
    */
-  async request(url: string, options: {} = {}): Promise<{}> {
+  async apiRequest(request: string): Promise<[]> {
     try {
       cli.action.start('Fetching data from Toggl API...')
-      const response = await axios.get(url, {
+      const response = await axios.get(Config.apiUrl + request, {
         auth: {
           username: this.cfg.apiToken,
           password: 'api_token',
         },
-        params: options,
       })
 
       cli.action.stop()
+
       return response.data
     } catch (error) {
       cli.action.stop()
@@ -71,14 +70,35 @@ export default abstract class extends Command {
    * Toggle Report by date
    *
    * @param {string} reportDate - Date [YYYY-MM-DD]
-   * @returns {Promise<{}>} report results
+   * @returns {Promise<{reportInputData} report results
    */
-  async reportRequest(reportDate: string): Promise<{}> {
-    return this.request(Config.reportsApiUrl, {
-      since: reportDate,
-      until: reportDate,
-      user_agent: this.cfg.apiUserAgent,
-      workspace_id: this.cfg.workspaceId,
-    })
+  async reportRequest(reportDate: string): Promise<reportInputData> {
+    try {
+      cli.action.start('Fetching data from Toggl API...')
+      const response: {data: reportInputData} = await axios.get(Config.reportsApiUrl, {
+        auth: {
+          username: this.cfg.apiToken,
+          password: 'api_token',
+        },
+        params: {
+          since: reportDate,
+          until: reportDate,
+          user_agent: this.cfg.apiUserAgent,
+          workspace_id: this.cfg.workspaceId,
+        },
+      })
+
+      cli.action.stop()
+
+      const {data} = response
+      return {
+        total_count: data.total_count,
+        total_grand: data.total_grand,
+        data: data.data
+      }
+    } catch (error) {
+      cli.action.stop()
+      throw new Error(error)
+    }
   }
 }

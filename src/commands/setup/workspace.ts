@@ -1,7 +1,6 @@
+import * as inquirer from 'inquirer'
 import Command from '../../Command'
 import {flags} from '@oclif/command'
-import Config from '../../config'
-import * as inquirer from 'inquirer'
 
 /**
  * Define workspace/ workspace list
@@ -53,7 +52,7 @@ export default class Workspace extends Command {
    * @returns {Promise<workspaceChoices>} Workspaces
    */
   async getWorkspaces(): Promise<workspaceChoices> {
-    const workspaces = await this.request(Config.apiUrl)
+    const workspaces = await this.apiRequest('workspaces')
 
     return workspaces.map((workspace: workspaceObject) => {
       return {
