@@ -3,7 +3,7 @@ import cli from 'cli-ux'
 import {flags} from '@oclif/command'
 
 export default class Auth extends Command {
-  static description = 'Setup API Token and User'
+  static description = 'setup api token and user'
 
   static examples = [
     '$ togglr setup:auth --token <YOUR-TOKEN> --user <YOUR-USER>',

@@ -1,7 +1,8 @@
+import * as inquirer from 'inquirer'
 import Command from '@oclif/command'
 import Config from './config'
-import * as inquirer from 'inquirer'
 import axios from 'axios'
+import cli from 'cli-ux'
 
 export default abstract class extends Command {
   /**
@@ -40,15 +41,16 @@ export default abstract class extends Command {
   }
 
   /**
-   * Toggle API request
+   * Toggl API request
    *
-   * @param {string} url
+   * @param {string} url - Toggl API URL
    * @param {{}} [options={}] - request params
    *
    * @returns {Promise<{}>} Axios Response
    */
   async request(url: string, options: {} = {}): Promise<{}> {
     try {
+      cli.action.start('Fetching data from Toggl API...')
       const response = await axios.get(url, {
         auth: {
           username: this.cfg.apiToken,
@@ -57,8 +59,10 @@ export default abstract class extends Command {
         params: options,
       })
 
+      cli.action.stop()
       return response.data
     } catch (error) {
+      cli.action.stop()
       throw new Error(error)
     }
   }
@@ -66,7 +70,7 @@ export default abstract class extends Command {
   /**
    * Toggle Report by date
    *
-   * @param {string} reportDate
+   * @param {string} reportDate - Date [YYYY-MM-DD]
    * @returns {Promise<{}>} report results
    */
   async reportRequest(reportDate: string): Promise<{}> {

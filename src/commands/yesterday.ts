@@ -2,7 +2,7 @@ import Command from '../Command'
 import Report from '../report'
 
 export default class Yesterday extends Command {
-  static description = 'Get Toggl report for yesterday'
+  static description = 'report for yesterday'
 
   static examples = [
     '$ togglr yesterday',

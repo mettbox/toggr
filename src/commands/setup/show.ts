@@ -1,11 +1,10 @@
 import Command from '../../Command'
-import cli from 'cli-ux'
 
 export default class Show extends Command {
-  static description = 'Show current Setup'
+  static description = 'show setup'
 
   static examples = [
-    '$ togglr setup:show'
+    '$ togglr setup:show',
   ]
 
   async run() {

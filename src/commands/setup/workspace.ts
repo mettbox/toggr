@@ -1,5 +1,4 @@
 import Command from '../../Command'
-import axios from 'axios'
 import {flags} from '@oclif/command'
 import Config from '../../config'
 import * as inquirer from 'inquirer'
@@ -11,7 +10,7 @@ type workspaceObject = { id: number; name: string }
 type workspaceChoices = { name: string; value: number }[]
 
 export default class Workspace extends Command {
-  static description = 'Setup Toggl Workspace ID'
+  static description = 'setup workspace id'
 
   static examples = ['$ togglr setup:workspace <YOUR-WORKSPACE-ID>']
 
