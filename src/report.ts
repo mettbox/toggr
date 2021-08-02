@@ -204,7 +204,7 @@ export default class Report {
    */
   ms2Time(duration: number): string {
     const minutes = (duration/(1000 * 60)) % 60
-    const hours = Math.round((duration/(1000 * 60 * 60)) % 24)
+    const hours = Math.floor((duration/(1000 * 60 * 60)) % 24)
 
     const hoursString: string = (hours < 10)
       ? `0${hours}`
