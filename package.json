@@ -1,12 +1,61 @@
 {
-  "name": "togglr",
+  "name": "toggr",
   "description": "Toggl time tracking reports CLI",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "Maik Mettenheimer",
   "bin": {
-    "togglr": "./bin/run"
+    "toggr": "./bin/run"
   },
-  "bugs": "https://github.com/mettbox/toggle-report/issues",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif-dev readme && git add README.md",
+    "lint": "eslint . --ext .ts"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": "https://github.com/mettbox/toggr",
+  "homepage": "https://github.com/mettbox/toggr",
+  "bugs": "https://github.com/mettbox/toggr/issues",
+  "keywords": [
+    "oclif"
+  ],
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "toggr",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found"
+    ]
+  },
+  "eslintConfig": {
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "rules": {
+      "@typescript-eslint/no-explicit-any": 0
+    }
+  },
+  "eslintIgnore": ["node_modules", "bin"],
   "dependencies": {
     "@oclif/command": "^1",
     "@oclif/config": "^1",
@@ -32,7 +81,9 @@
     "@types/mocha": "^5",
     "@types/node": "^10",
     "chai": "^4",
-    "eslint": "^5.13",
+    "eslint": "^8.12.0",
+    "@typescript-eslint/eslint-plugin": "^5.17.0",
+    "@typescript-eslint/parser": "^5.17.0",
     "eslint-config-oclif": "^3.1",
     "eslint-config-oclif-typescript": "^0.1",
     "globby": "^10",
@@ -40,37 +91,5 @@
     "nyc": "^14",
     "ts-node": "^8",
     "typescript": "^3.3"
-  },
-  "engines": {
-    "node": ">=8.0.0"
-  },
-  "files": [
-    "/bin",
-    "/lib",
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
-  ],
-  "homepage": "https://github.com/mettbox/toggle-report",
-  "keywords": [
-    "oclif"
-  ],
-  "license": "MIT",
-  "main": "lib/index.js",
-  "oclif": {
-    "commands": "./lib/commands",
-    "bin": "togglr",
-    "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-not-found"
-    ]
-  },
-  "repository": "https://github.com/mettbox/toggle-report",
-  "scripts": {
-    "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif-dev readme && git add README.md"
-  },
-  "types": "lib/index.d.ts"
+  }
 }

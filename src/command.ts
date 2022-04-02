@@ -36,7 +36,7 @@ export default abstract class extends Command {
     }])
 
     if (!shallContinue) {
-      // eslint-disable-next-line unicorn/no-process-exit,no-process-exit
+      // eslint-disable-next-line no-process-exit
       process.exit()
     }
   }
