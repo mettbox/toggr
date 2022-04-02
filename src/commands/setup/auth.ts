@@ -6,7 +6,7 @@ export default class Auth extends Command {
   static description = 'setup api token and user'
 
   static examples = [
-    '$ togglr setup:auth --token <YOUR-TOKEN> --user <YOUR-USER>',
+    '$ toggr setup:auth --token <YOUR-TOKEN> --user <YOUR-USER>',
   ]
 
   static flags = {

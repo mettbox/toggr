@@ -5,7 +5,7 @@ export default class For extends Command {
   static description = 'report by date'
 
   static examples = [
-    '$ togglr for 2021-07-09',
+    '$ toggr for 2021-07-09',
   ]
 
   static args = [{name: 'reportDate'}]

@@ -1,4 +1,4 @@
-# togglr
+# toggr
 
 > Toggl time tracking reports CLI
 
@@ -19,15 +19,15 @@ $ npm install -g .
 # Usage
 
 ```sh
-$ togglr COMMAND
+$ toggr COMMAND
 running command...
 
-$ togglr (-v|--version|version)
-togglr/2.0.0 darwin-x64 node-v15.4.0
+$ toggr (-v|--version|version)
+toggr/2.0.0 darwin-x64 node-v15.4.0
 
-$ togglr --help [COMMAND]
+$ toggr --help [COMMAND]
 
 USAGE
-  $ togglr COMMAND
+  $ toggr COMMAND
 ...
 ```

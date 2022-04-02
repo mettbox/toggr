@@ -5,7 +5,7 @@ export default class Yesterday extends Command {
   static description = 'report for yesterday'
 
   static examples = [
-    '$ togglr yesterday',
+    '$ toggr yesterday',
   ]
 
   async run() {

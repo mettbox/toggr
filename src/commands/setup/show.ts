@@ -4,7 +4,7 @@ export default class Show extends Command {
   static description = 'show setup'
 
   static examples = [
-    '$ togglr setup:show',
+    '$ toggr setup:show',
   ]
 
   async run() {

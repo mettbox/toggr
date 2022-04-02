@@ -69,8 +69,8 @@ export default class Config {
     const os = process.platform
     const homeDir = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
     const configPath: string = os === 'win32' ?
-      path.resolve(homeDir, 'AppData', 'Local', 'togglr', 'togglr.json') :
-      path.resolve(homeDir, 'Library', 'Preferences', 'togglr.json')
+      path.resolve(homeDir, 'AppData', 'Local', 'toggr', 'toggr.json') :
+      path.resolve(homeDir, 'Library', 'Preferences', 'toggr.json')
 
     if (!fs.existsSync(configPath)) {
       try {

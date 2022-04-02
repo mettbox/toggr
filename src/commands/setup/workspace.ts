@@ -11,7 +11,7 @@ type workspaceChoices = { name: string; value: number }[]
 export default class Workspace extends Command {
   static description = 'setup workspace id'
 
-  static examples = ['$ togglr setup:workspace <YOUR-WORKSPACE-ID>']
+  static examples = ['$ toggr setup:workspace <YOUR-WORKSPACE-ID>']
 
   static flags = {
     force: flags.boolean(),
