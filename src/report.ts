@@ -1,8 +1,9 @@
 import * as chalk from 'chalk'
 import * as clipboardy from 'clipboardy'
-import {Table} from 'console-table-printer'
-import {entriesObject, reportDataObject, reportInputData, reportInputEntry} from './types'
+import { Table } from 'console-table-printer'
+import { entriesObject, reportDataObject, reportInputData, reportInputEntry } from './types'
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const keypress = require('keypress')
 
 /**
@@ -18,35 +19,42 @@ export default class Report {
    */
   readonly #reportData: reportDataObject
 
-  clipboard: {[key: string]: string}
+  /**
+   * Clipboard
+   */
+  clipboard: { [key: string]: string } = {}
 
   /**
-   * ReportDate
+   * date
    *
    * @private
    */
-  readonly #reportDate: string
+  readonly #date: string
 
   /**
    * Constructor
    *
    * @param {reportInputData} data
-   * @param {string} reportDate
+   * @param {string} date
    */
-  constructor(data: reportInputData, reportDate: string) {
-    this.#reportDate = reportDate
+  constructor(data: reportInputData, date: string) {
+    this.#date = date
     this.#reportData = {
       duration: this.ms2Time(data.total_grand),
       entries: this.groupedData(data.data),
     }
-    this.clipboard = {}
+    // this.clipboard = {}
   }
 
   /**
    * Log beautified report data
    */
   public print(): void {
-    const title = chalk.bold('Toggl Report', this.#reportDate, `(${this.#reportData.duration})`, ' '.repeat(44))
+    const title = chalk.bold(
+      'Toggl Report',
+      this.#date,
+      `(${this.#reportData.duration})`, ' '.repeat(44)
+    )
 
     console.log(`╔${'═'.repeat(78)}╗`)
     console.log(`║ ${title} ║`)
@@ -88,7 +96,7 @@ export default class Report {
         ],
       })
 
-      entry.projects.forEach((project: {project: string, duration: string, descriptions: string}) => {
+      entry.projects.forEach((project: { project: string, duration: string, descriptions: string }) => {
         key = Report.nextChar(key)
         table.addRow({
           ...project,
@@ -111,11 +119,11 @@ export default class Report {
    * @returns {void} keypress listener
    * @private
    */
-  private keypressListener ():void {
+  private keypressListener(): void {
     console.log('Press Key to copy Description or ⌃c to quit.')
 
     // make `process.stdin` begin emitting "keypress" events
-    const {stdin} = process
+    const { stdin } = process
     keypress(stdin)
 
     // listen for the "keypress" event
@@ -143,7 +151,7 @@ export default class Report {
    * @returns {string} next char
    * @private
    */
-  private static nextChar(char: string = '') {
+  private static nextChar(char = '') {
     return char
       ? String.fromCharCode(char.charCodeAt(0) + 1)
       : 'a'
@@ -160,10 +168,10 @@ export default class Report {
     const groupByClientsKeys = this.groupBy(entries, 'client')
 
     return Object.keys(groupByClientsKeys).map(client => {
-      const groupByProjectKeys = <{[key: string]: reportInputEntry[]}>this.groupBy(groupByClientsKeys[client], 'project')
+      const groupByProjectKeys = <{ [key: string]: reportInputEntry[] }>this.groupBy(groupByClientsKeys[client], 'project')
 
       const projects = Object.keys(groupByProjectKeys).map(projectGroup => {
-        const duration = groupByProjectKeys[projectGroup].reduce((durations, {dur}) => {
+        const duration = groupByProjectKeys[projectGroup].reduce((durations, { dur }) => {
           return durations + dur
         }, 0)
 
@@ -176,20 +184,20 @@ export default class Report {
         }
       })
 
-      return {client, projects}
+      return { client, projects }
     })
   }
 
   /**
    * Group Array of Objects by key
    *
-   * @param {{}[]} items
+   * @param {reportInputEntry[]} items
    * @param {string} key
-   * @returns {[key: string]: {}[]} grouped object
+   * @returns {[key: string]: reportInputEntry[]} grouped object
    * @private
    */
-  private groupBy(items: {}[], key: string): {[key: string]: {}[]} {
-    return items.reduce((group: {[key: string]: any}, entry: {[key: string]: any}) => {
+  private groupBy(items: reportInputEntry[], key: string): { [key: string]: reportInputEntry[] } {
+    return items.reduce((group: { [key: string]: any }, entry: { [key: string]: any }) => {
       group[entry[key]] = [...group[entry[key]] || [], entry]
 
       return group
@@ -203,17 +211,17 @@ export default class Report {
    * @returns {string} formatted duration
    */
   ms2Time(duration: number): string {
-    const minutes = (duration/(1000 * 60)) % 60
-    const hours = Math.floor((duration/(1000 * 60 * 60)) % 24)
+    const minutes = Math.round((duration / (1000 * 60)) % 60)
+    const hours = Math.floor((duration / (1000 * 60 * 60)) % 24)
 
-    const hoursString: string = (hours < 10)
-      ? `0${hours}`
-      : `${hours}`
+    const hoursString: string = hours < 10
+      ? `0${ hours }`
+      : `${ hours }`
 
-    const minutesString: string = (minutes < 10)
+    const minutesString: string = minutes < 10
       ? `0${minutes}`
       : `${minutes}`
 
-    return `${hoursString}:${minutesString}`
+    return `${ hoursString }:${ minutesString }`
   }
 }
